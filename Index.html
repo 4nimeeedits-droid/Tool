@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Utility Hub - QR Scanner & Tools</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- HTML5 QR Code Scanner Library -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <!-- QRCode.js Generator Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body class="bg-gray-100 font-sans text-gray-800 flex flex-col min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-blue-600 text-white shadow-md">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold flex items-center gap-2">
+                🛠️ Utility Hub
+            </h1>
+            <p class="text-sm text-blue-100 hidden sm:block">All-in-one free web tools</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 py-8 flex-grow w-full">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+            <!-- Tool 1: QR Code Scanner -->
+            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    📷 QR Code Scanner
+                </h2>
+                <p class="text-sm text-gray-600 mb-4">Click below to allow camera permission and scan.</p>
+                
+                <!-- Start Camera Action Button -->
+                <button id="start-cam-btn" onclick="startScanner()" 
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition mb-4">
+                    🎥 Start Camera / Ask Permission
+                </button>
+
+                <!-- Scanner Frame -->
+                <div id="reader" class="w-full bg-gray-50 rounded-lg overflow-hidden border border-dashed border-gray-300 min-h-[200px]"></div>
+                
+                <!-- Result Box -->
+                <div id="scan-result" class="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200 text-sm hidden">
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Scanned Link / Data:</p>
+                    <div id="result-content" class="break-all font-medium"></div>
+                </div>
+            </div>
+
+            <!-- Tool 2: QR Code Generator -->
+            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    ✨ QR Code Generator
+                </h2>
+                <p class="text-sm text-gray-600 mb-4">Enter text or URL to generate a QR code.</p>
+                <div class="space-y-4">
+                    <input type="text" id="qr-input" placeholder="https://example.com or enter text" 
+                        class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <button onclick="generateQRCode()" 
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
+                        Generate QR Code
+                    </button>
+                    <div id="qrcode" class="flex justify-center pt-4"></div>
+                </div>
+            </div>
+
+            <!-- Tool 3: Text Utilities -->
+            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    📝 Text Utilities
+                </h2>
+                <textarea id="text-input" rows="4" placeholder="Type or paste your text here..." 
+                    class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm mb-3"
+                    oninput="updateTextStats()"></textarea>
+                
+                <div class="text-xs text-gray-500 mb-4 flex justify-between">
+                    <span>Characters: <strong id="char-count" class="text-gray-800">0</strong></span>
+                    <span>Words: <strong id="word-count" class="text-gray-800">0</strong></span>
+                </div>
+
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="convertText('upper')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs py-2 px-3 rounded-md">UPPERCASE</button>
+                    <button onclick="convertText('lower')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs py-2 px-3 rounded-md">lowercase</button>
+                    <button onclick="convertText('capital')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs py-2 px-3 rounded-md">Capitalize</button>
+                </div>
+            </div>
+
+            <!-- Tool 4: Password Generator -->
+            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    🔒 Strong Password Generator
+                </h2>
+                <div class="space-y-4">
+                    <div class="flex gap-2">
+                        <input type="text" id="password-output" readonly placeholder="Generated Password" 
+                            class="w-full p-2.5 bg-gray-50 border rounded-lg font-mono text-sm">
+                        <button onclick="copyPassword()" class="bg-gray-200 hover:bg-gray-300 px-4 rounded-lg text-sm font-medium">Copy</button>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <label for="pass-length" class="text-sm text-gray-600">Length: <span id="length-val">12</span></label>
+                        <input type="range" id="pass-length" min="6" max="32" value="12" class="w-1/2" oninput="document.getElementById('length-val').innerText = this.value">
+                    </div>
+                    <button onclick="generatePassword()" 
+                        class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition">
+                        Generate Password
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t mt-auto">
+        <div class="max-w-6xl mx-auto px-4 py-4 text-center text-sm text-gray-500">
+            &copy; Utility Hub. Built with HTML, Tailwind CSS, and JavaScript.
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        let html5QrCode;
+
+        async function startScanner() {
+            try {
+                // Request camera permission directly
+                await navigator.mediaDevices.getUserMedia({ video: true });
+                
+                // Hide button after permission
+                document.getElementById('start-cam-btn').style.display = 'none';
+
+                if (!html5QrCode) {
+                    html5QrCode = new Html5Qrcode("reader");
+                }
+
+                html5QrCode.start(
+                    { facingMode: "environment" }, 
+                    { fps: 10, qrbox: { width: 220, height: 220 } },
+                    (decodedText) => {
+                        onScanSuccess(decodedText);
+                    },
+                    (errorMessage) => {
+                        // ignore scan failures
+                    }
+                );
+            } catch (err) {
+                alert("Camera Access Denied! Please allow camera permission in browser settings (Lock icon near URL).");
+            }
+        }
+
+        function onScanSuccess(decodedText) {
+            const resultBox = document.getElementById('scan-result');
+            const resultContent = document.getElementById('result-content');
+
+            resultBox.classList.remove('hidden');
+
+            let formattedUrl = decodedText;
+            let isUrl = false;
+
+            if (decodedText.startsWith('http://') || decodedText.startsWith('https://')) {
+                isUrl = true;
+            } else if (decodedText.startsWith('www.')) {
+                isUrl = true;
+                formattedUrl = 'https://' + decodedText;
+            }
+
+            if (isUrl) {
+                resultContent.innerHTML = `
+                    <a href="${formattedUrl}" target="_blank" class="text-blue-600 underline font-semibold text-base hover:text-blue-800 transition break-all">
+                        ${decodedText}
+                    </a>
+                `;
+            } else {
+                resultContent.innerText = decodedText;
+            }
+        }
+
+        // --- QR CODE GENERATOR ---
+        function generateQRCode() {
+            const input = document.getElementById('qr-input').value;
+            const qrcodeContainer = document.getElementById('qrcode');
+            
+            if (!input) {
+                alert('Please enter text or a URL');
+                return;
+            }
+            
+            qrcodeContainer.innerHTML = "";
+            new QRCode(qrcodeContainer, {
+                text: input,
+                width: 160,
+                height: 160
+            });
+        }
+
+        // --- TEXT UTILITIES ---
+        function updateTextStats() {
+            const text = document.getElementById('text-input').value;
+            document.getElementById('char-count').innerText = text.length;
+            const words = text.trim().split(/\s+/).filter(word => word.length > 0);
+            document.getElementById('word-count').innerText = words.length;
+        }
+
+        function convertText(type) {
+            const textArea = document.getElementById('text-input');
+            let text = textArea.value;
+
+            if (type === 'upper') textArea.value = text.toUpperCase();
+            if (type === 'lower') textArea.value = text.toLowerCase();
+            if (type === 'capital') textArea.value = text.replace(/\b\w/g, char => char.toUpperCase());
+
+            updateTextStats();
+        }
+
+        // --- PASSWORD GENERATOR ---
+        function generatePassword() {
+            const length = document.getElementById('pass-length').value;
+            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+            let password = "";
+            for (let i = 0; i < length; i++) {
+                password += charset.charAt(Math.floor(Math.random() * charset.length));
+            }
+            document.getElementById('password-output').value = password;
+        }
+
+        function copyPassword() {
+            const passwordField = document.getElementById('password-output');
+            if (!passwordField.value) return;
+            passwordField.select();
+            navigator.clipboard.writeText(passwordField.value);
+            alert('Password copied!');
+        }
+    </script>
+</body>
+  </html>
